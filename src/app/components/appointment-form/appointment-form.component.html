@@ -1,0 +1,59 @@
+<mat-dialog-content>
+  <form [formGroup]="appointmentForm" (ngSubmit)="submitForm()">
+    <mat-form-field class="example-full-width">
+      <mat-label>Appointment name</mat-label>
+      <input
+        matInput
+        placeholder="Title"
+        formControlName="title"
+        name="title"
+        [(ngModel)]="appointmentForm.title"
+      />
+      <mat-error *ngIf="appointmentForm.get('title').invalid"
+        >Title is required</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Select Start Time</mat-label>
+      <mat-select
+        formControlName="startTime"
+        name="startTime"
+        [(ngModel)]="appointmentForm.startTime"
+      >
+        <mat-option *ngFor="let time of times" [value]="time">{{
+          time
+        }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="appointmentForm.get('startTime').invalid"
+        >Start time is required</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Select End Time</mat-label>
+      <mat-select
+        formControlName="endTime"
+        name="endTime"
+        [(ngModel)]="appointmentForm.endTime"
+      >
+        <mat-option *ngFor="let time of times" [value]="time">{{
+          time
+        }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="appointmentForm.get('endTime').invalid"
+        >End time is required</mat-error
+      >
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      type="submit"
+      color="primary"
+      [disabled]="!appointmentForm.valid"
+    >
+      Submit
+    </button>
+    <button mat-button (click)="closeDialog()">Close</button>
+  </form>
+</mat-dialog-content>

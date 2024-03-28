@@ -1,0 +1,20 @@
+<div
+  #resizeBox
+  #elementToManipulate
+  class="box"
+  [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
+  (cdkDragStarted)="dragStarted($event)"
+  (cdkDragEnded)="dragEnded($event)"
+  cdkDrag
+>
+  {{ schedule.startTime }} - {{ schedule.endTime }} - {{ schedule.title }}
+  <span
+    #dragHandleBottom
+    cdkDragLockAxis="y"
+    class="dragHandle bottom"
+    (cdkDragMoved)="dragMove(dragHandleBottom)"
+    (cdkDragStarted)="dragStarted($event)"
+    [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
+    cdkDrag
+  ></span>
+</div>
