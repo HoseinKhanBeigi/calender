@@ -12,15 +12,15 @@ import {
   VERSION as MAT_VERSION,
   MatNativeDateModule,
 } from '@angular/material/core';
+import { provideStore } from '@ngrx/store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     DragDropModule,
-
     provideRouter(routes, withComponentInputBinding()),
-
     provideAnimations(),
     provideHttpClient(),
     importProvidersFrom(MatNativeDateModule),
-  ],
+    provideStore()
+],
 };

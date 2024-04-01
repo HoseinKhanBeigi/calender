@@ -1,0 +1,21 @@
+<div class="calender-view-container">
+  <!-- @for(schedule of schedules; track schedule){
+  <app-appointment
+    [startTime]="startTime"
+    [schedule]="schedule"
+  ></app-appointment>
+
+  } -->
+  <app-date-picker></app-date-picker>
+  <div class="calender-view-time-slot">
+    @for (slot of timeSlots; track slot) {
+    <div class="calender-view-slot" (click)="handleClick($event)">
+      <div class="calender-view-time">
+        {{ slot.startTime }}
+      </div>
+
+      <div class="calender-view-line"></div>
+    </div>
+    }
+  </div>
+</div>
