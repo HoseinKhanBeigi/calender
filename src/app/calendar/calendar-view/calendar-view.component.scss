@@ -1,13 +1,16 @@
 .calender-view-container {
   display: flex;
+  // gap: 32px;
   .calender-view-time-slot {
     position: relative;
     .calender-view-slot {
       display: flex;
       height: 60px;
+      align-items: center;
+      gap: 16px;
       .calender-view-line {
-        border-top: 1px solid #525252;
-        width: 700px;
+        border-top: 1px solid #c6c3c3;
+        width: 970px;
         position: relative;
         // top: 10px;
       }

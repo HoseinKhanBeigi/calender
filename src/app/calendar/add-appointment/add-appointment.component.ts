@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { ScheduleService } from '../../schedule.service';
+import { Schedule, ScheduleDate } from '../../schedule.model';
+
 import { ReactiveFormsModule } from '@angular/forms';
 
 import {
@@ -8,6 +10,7 @@ import {
   MatDialogActions,
   MatDialogClose,
   MatDialogRef,
+  MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +24,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-add-appointment',
   standalone: true,
@@ -47,6 +51,8 @@ export class AddAppointmentComponent {
   constructor(
     private scheduleService: ScheduleService,
     public dialogRef: MatDialogRef<AddAppointmentComponent>,
+    private route: ActivatedRoute,
+    @Inject(MAT_DIALOG_DATA) public data: any,
 
     private formBuilder: FormBuilder
   ) {}
@@ -93,28 +99,18 @@ export class AddAppointmentComponent {
 
   submitForm() {
     if (this.appointmentForm.valid) {
-      const url = window.location.href;
-      const regex = /(\d{4})\/(\d{1,2})\/(\d{1,2})/;
-      const matches = url.match(regex);
-      if (matches && matches.length === 4) {
-        const year = matches[1];
-        const month = matches[2];
-        const day = matches[3];
-        this.appointmentForm.date = new Date(`${year}-${month}-${day}`);
-      }
-
-      const existingSchedulePerDay = {
-        date: this.appointmentForm.date,
-        schedules: [
-          {
-            title: this.appointmentForm.title,
-            startTime: this.appointmentForm.startTime,
-            endTime: this.appointmentForm.endTime,
-          },
-        ],
-      };
-
-      this.scheduleService.addOrUpdateSchedule(existingSchedulePerDay);
+      console.log(this.data);
+      const existingSchedulePerDay: Schedule[] = [
+        {
+          title: this.appointmentForm.title,
+          startTime: this.appointmentForm.startTime,
+          endTime: this.appointmentForm.endTime,
+        },
+      ];
+      this.scheduleService.addOrUpdateSchedule(
+        `${this.data.date}`,
+        existingSchedulePerDay
+      );
       this.dialogRef.close();
     }
   }

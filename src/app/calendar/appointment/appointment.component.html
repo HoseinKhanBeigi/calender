@@ -1,2 +1,32 @@
-<div #elementToManipulate class="appointment" cdkDrag ></div>
-
+<div
+  #elementToManipulate
+  class="appointment"
+  cdkDrag
+  [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
+  (cdkDragStarted)="dragStarted($event)"
+  (cdkDragEntered)="dragEnter($event)"
+  (cdkDragEnded)="dragEnded($event)"
+>
+  <div class="appointment-tools">
+    <div>
+      <button (click)="deleteSchedule(schedule.id)" mat-icon-button>
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button (click)="deleteSchedule(schedule.id)" mat-icon-button>
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <div>
+      {{ schedule.startTime }} - {{ schedule.endTime }} - {{ schedule.title }}
+    </div>
+  </div>
+  <span
+    #dragHandleBottom
+    cdkDragLockAxis="y"
+    class="dragHandle bottom"
+    (cdkDragMoved)="dragMove(dragHandleBottom)"
+    (cdkDragStarted)="dragStarted($event)"
+    [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
+    cdkDrag
+  ></span>
+</div>

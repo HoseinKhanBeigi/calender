@@ -1,11 +1,34 @@
 .appointment {
-    position: absolute;
-    width: 700px;
-    height: 60px;
-    background-color: gray;
-    opacity: .4;
-    border-radius: 1px;
-    cursor: grab;
-    left: 70px;
-    z-index: 999;
-  }
+  position: absolute;
+  width: 980px;
+  height: 60px;
+  background-color: rgb(3, 155, 229);
+  border-color: rgb(3, 155, 229);
+  // opacity: 0.4;
+  border-radius: 1px;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+  left: 390px;
+  z-index: 999;
+}
+
+.dragHandle {
+  position: absolute;
+  background-color: gray;
+  border-radius: 15px;
+  left: 0;
+  top: 60px;
+}
+
+.appointment-tools {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.dragHandle.bottom {
+  height: 2px;
+  width: 980px;
+  cursor: ns-resize;
+}

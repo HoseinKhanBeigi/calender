@@ -1,15 +1,22 @@
 <div class="calender-view-container">
-  <!-- @for(schedule of schedules; track schedule){
-  <app-appointment
-    [startTime]="startTime"
-    [schedule]="schedule"
-  ></app-appointment>
+  <div *ngFor="let schedule of schedules; index as i">
+    <app-appointment
+      [startTime]="startTime"
+      [index]="i"
+      [schedule]="schedule"
+    ></app-appointment>
+  </div>
 
-  } -->
   <app-date-picker></app-date-picker>
-  <div class="calender-view-time-slot">
+  <div class="calender-view-time-slot" #myList>
     @for (slot of timeSlots; track slot) {
-    <div class="calender-view-slot" (click)="handleClick($event)">
+    <div
+      #listItem
+      class="calender-view-slot"
+      (click)="handleClick($event)"
+      (cdkDragEntered)="onDragEnter($event, slot)"
+      (cdkDragExited)="onDragExit($event, slot)"
+    >
       <div class="calender-view-time">
         {{ slot.startTime }}
       </div>
