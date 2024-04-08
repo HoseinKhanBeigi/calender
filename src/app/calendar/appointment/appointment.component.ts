@@ -51,6 +51,16 @@ export class AppointmentComponent implements OnInit, OnChanges {
     // Access the nativeElement property to get access to the DOM element
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
+    // console.log(parseInt(this.schedule.startTime.split(':')[0], 10));
+    // console.log(this.schedule.endTime, this.schedule.startTime);
+
+    // Split the string by the '.' to separate hours and minutes
+    const [hours, minutes] = this.schedule.startTime.split(':');
+    console.log(this.schedule);
+    // Convert the hours to a number and multiply by 60, convert minutes to a number as well
+    const totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+    // console.log(totalMinutes);
+
     let startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
     let endTime = parseInt(this.schedule.endTime.split(':')[0], 10);
     element.style.transform = `translateY(${startTime * 60 + 15 + 15}px)`;
@@ -81,8 +91,8 @@ export class AppointmentComponent implements OnInit, OnChanges {
       let startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
       const endTime: any = target.style.height;
       const res: any = parseInt(endTime, 10);
-      console.log(this.schedule.startTime);
-      console.log(res);
+      // console.log(this.schedule.startTime);
+      // console.log(res);
 
       // this.startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
     }
@@ -117,7 +127,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.start = event.source.element.nativeElement.getBoundingClientRect();
   }
 
-  dragEnter(event: any) {}
   computeDragRenderPos(pos: { y: number }) {
     const delta = pos.y - this?.start.y;
     return { y: this.start.y + Math.floor(delta / 15) * 15, x: this.start.x };
@@ -126,21 +135,31 @@ export class AppointmentComponent implements OnInit, OnChanges {
   updateSchedule() {
     const element =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height;
-
     this.route.params.subscribe((params) => {
       const year = params['year'];
       const month = params['month'];
       const day = params['day'];
       const scheduleDate = new Date(`${year}-${month}-${day}`);
+      const result: any = parseFloat(
+        (this.startTime - element / 60).toFixed(2)
+      );
+      const resultForStartTime = parseFloat(
+        (result + element / 60 - 1).toFixed(2)
+      );
+
+      const roundForEndTime: any = parseFloat(
+        this.startTime + element / 60
+      ).toFixed(2);
+
       const existingSchedulePerDay: any = {
-        startTime:
-          element === 60
-            ? this.startTime - element / 60
-            : this.startTime - element / 60 + element / 60 - 1,
+        startTime: element === 60 ? result : resultForStartTime,
         endTime:
-          element === 60 ? this.startTime : this.startTime + element / 60 - 1,
+          element === 60
+            ? this.startTime
+            : parseFloat((roundForEndTime - 1).toFixed(2)),
         index: this.index,
       };
+      // console.log(existingSchedulePerDay);
       this.scheduleService.updateScheduleById(
         scheduleDate,
         existingSchedulePerDay
