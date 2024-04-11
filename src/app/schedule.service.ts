@@ -55,10 +55,8 @@ export class ScheduleService {
         new Date(schedule.date).getTime() === new Date(scheduleDate).getTime()
     );
     if (existingDate) {
-      console.log(data, 'data ');
       const convertedStartedTime = data.startTime.toString().replace('.', ':');
       const convertedEndedTime = data.endTime.toString().replace('.', ':');
-      // console.log(convertedEndedTime, convertedStartedTime);
       existingDate.schedules[data.index].startTime = convertedStartedTime;
       existingDate.schedules[data.index].endTime = convertedEndedTime;
     }

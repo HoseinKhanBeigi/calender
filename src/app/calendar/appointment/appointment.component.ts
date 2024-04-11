@@ -1,5 +1,6 @@
 import {
   CdkDrag,
+  CdkDragEnd,
   CdkDragPlaceholder,
   CdkDragStart,
 } from '@angular/cdk/drag-drop';
@@ -41,6 +42,8 @@ export class AppointmentComponent implements OnInit, OnChanges {
     | ElementRef
     | undefined;
   start: any;
+  getBy15PixelStep: any;
+  sumBy15PixelStep: any = 0;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -51,21 +54,22 @@ export class AppointmentComponent implements OnInit, OnChanges {
     // Access the nativeElement property to get access to the DOM element
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
-    // console.log(parseInt(this.schedule.startTime.split(':')[0], 10));
-    // console.log(this.schedule.endTime, this.schedule.startTime);
-
-    // Split the string by the '.' to separate hours and minutes
     const [hours, minutes] = this.schedule.startTime.split(':');
-    console.log(this.schedule);
-    // Convert the hours to a number and multiply by 60, convert minutes to a number as well
-    const totalMinutes = parseInt(hours, 10) * 60 + parseInt(minutes, 10);
-    // console.log(totalMinutes);
+    this.startTime = parseInt(hours, 10);
+    const [hoursEndTime, minutesEndTime] = this.schedule.endTime.split(':');
+    const totalMinutesStartTime =
+      parseInt(hours, 10) * 60 + parseInt(minutes, 10);
 
-    let startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
-    let endTime = parseInt(this.schedule.endTime.split(':')[0], 10);
-    element.style.transform = `translateY(${startTime * 60 + 15 + 15}px)`;
-    element.style.height = `${(endTime - startTime) * 60}px`;
-    dragHandleBottom.style.top = `${(endTime - startTime) * 60}px`;
+    const totalMinutesEndTime =
+      parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
+
+    element.style.transform = `translateY(${
+      totalMinutesStartTime + 15 + 15
+    }px)`;
+    element.style.height = `${totalMinutesEndTime - totalMinutesStartTime}px`;
+    dragHandleBottom.style.top = `${
+      totalMinutesEndTime - totalMinutesStartTime
+    }px`;
   }
   get resizeBoxElement(): HTMLElement {
     return this.elementToManipulate?.nativeElement;
@@ -87,40 +91,54 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const targetRect = target.getBoundingClientRect();
     const height = dragRect.top - targetRect.top + dragRect.height;
     target.style.height = Math.floor(height / 15) * 15 + 'px';
-    if (target.style.height) {
-      let startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
-      const endTime: any = target.style.height;
-      const res: any = parseInt(endTime, 10);
-      // console.log(this.schedule.startTime);
-      // console.log(res);
 
-      // this.startTime = parseInt(this.schedule.startTime.split(':')[0], 10);
+    if (target.style.height) {
+      const appointmentHeight =
+        this.startTime + parseInt(target.style.height, 10) / 60;
+      const endTime = this.calculatePer15Min(appointmentHeight);
     }
-    // this.updateSchedule();
   }
 
-  roundToNearestQuarterHour(decimalTime: any) {
-    // Extract hours and minutes from the decimal time
-    let hours = Math.floor(decimalTime);
+  roundToNearestQuarterHour() {
+    this.sumBy15PixelStep = this.startTime * 60;
+    this.sumBy15PixelStep += this.getBy15PixelStep.y;
+    this.startTime = this.sumBy15PixelStep / 60;
+    return this.calculatePer15Min(this.startTime);
+  }
 
+  calculatePer15Min(decimalTime: any) {
+    const hours = Math.floor(decimalTime);
     let minutes = decimalTime - hours;
-    if (minutes > 0.01 && minutes < 0.24) {
+    if (minutes === 0.25) {
       return hours + 0.15;
-    } else if (minutes > 0.24 && minutes < 0.5) {
+    } else if (minutes === 0.5) {
       return hours + 0.3;
-    } else if (minutes > 0.5 && minutes < 0.76) {
+    } else if (minutes === 0.75) {
       return hours + 0.45;
     } else {
-      return Math.ceil(decimalTime);
+      return hours;
     }
   }
 
-  dragEnded(event: CdkDragStart | any) {
-    this.startTime = this.roundToNearestQuarterHour(event.event.pageY / 60);
+  diffBetweenDecimalTime(decimalTime: any) {
+    const hours = Math.floor(decimalTime);
+    let minutes: any = decimalTime - hours;
+    return parseFloat(minutes).toFixed(2);
+  }
 
-    if (this.startTime) {
-      this.updateSchedule();
-    }
+  dragEnded(event: CdkDragEnd | any) {
+    const appointmentHeight =
+      this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
+      60;
+
+    const startTime = this.roundToNearestQuarterHour();
+    // const first = this.diffBetweenDecimalTime(startTime);
+    // const second = this.diffBetweenDecimalTime(
+    //   this.calculatePer15Min(appointmentHeight)
+    // );
+    console.log(startTime, this.calculatePer15Min(appointmentHeight));
+    // if (first !== second) {
+    // }
   }
 
   dragStarted(event: CdkDragStart | any) {
@@ -129,41 +147,27 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   computeDragRenderPos(pos: { y: number }) {
     const delta = pos.y - this?.start.y;
+    this.getBy15PixelStep = {
+      y: Math.floor(delta / 15) * 15,
+    };
     return { y: this.start.y + Math.floor(delta / 15) * 15, x: this.start.x };
   }
 
   updateSchedule() {
-    const element =
-      this.elementToManipulate?.nativeElement.getBoundingClientRect().height;
     this.route.params.subscribe((params) => {
       const year = params['year'];
       const month = params['month'];
       const day = params['day'];
       const scheduleDate = new Date(`${year}-${month}-${day}`);
-      const result: any = parseFloat(
-        (this.startTime - element / 60).toFixed(2)
-      );
-      const resultForStartTime = parseFloat(
-        (result + element / 60 - 1).toFixed(2)
-      );
-
-      const roundForEndTime: any = parseFloat(
-        this.startTime + element / 60
-      ).toFixed(2);
 
       const existingSchedulePerDay: any = {
-        startTime: element === 60 ? result : resultForStartTime,
-        endTime:
-          element === 60
-            ? this.startTime
-            : parseFloat((roundForEndTime - 1).toFixed(2)),
         index: this.index,
       };
-      // console.log(existingSchedulePerDay);
-      this.scheduleService.updateScheduleById(
-        scheduleDate,
-        existingSchedulePerDay
-      );
+
+      // this.scheduleService.updateScheduleById(
+      //   scheduleDate,
+      //   existingSchedulePerDay
+      // );
     });
   }
   deleteSchedule(scheduleId: string) {

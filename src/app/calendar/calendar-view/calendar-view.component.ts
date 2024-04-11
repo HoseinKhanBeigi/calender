@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TIME_SLOTS } from './time-slots';
 import { AppointmentComponent } from '../appointment/appointment.component';
+import { CanvasDragDropComponent } from '../canvas-drag-drop/canvas-drag-drop.component';
 import { AddAppointmentComponent } from '../add-appointment/add-appointment.component';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { ScheduleService } from '../../schedule.service';
@@ -33,7 +34,7 @@ import {
     CdkDrag,
     CdkDragPlaceholder,
     CdkDropList,
-
+    CanvasDragDropComponent,
     AppointmentComponent,
     AddAppointmentComponent,
     DatePickerComponent,
