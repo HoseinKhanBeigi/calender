@@ -81,6 +81,8 @@ export class CalendarViewComponent implements AfterViewInit {
 
         this.schedules =
           existingDateIndex.length > 0 ? existingDateIndex[0].schedules : [];
+
+        console.log(this.schedules, 'this.schedules');
       });
     });
   }

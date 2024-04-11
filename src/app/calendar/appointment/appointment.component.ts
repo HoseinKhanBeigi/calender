@@ -55,7 +55,11 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
     const [hours, minutes] = this.schedule.startTime.split(':');
-    this.startTime = parseInt(hours, 10);
+    // console.log(this.schedule.startTime, 'this.schedule.startTime');
+    this.startTime = this.convertPer15MinToQuarter(
+      this.convertTimeToFloat(this.schedule.startTime)
+    );
+    console.log(this.startTime, 'this.sche');
     const [hoursEndTime, minutesEndTime] = this.schedule.endTime.split(':');
     const totalMinutesStartTime =
       parseInt(hours, 10) * 60 + parseInt(minutes, 10);
@@ -73,6 +77,11 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
   get resizeBoxElement(): HTMLElement {
     return this.elementToManipulate?.nativeElement;
+  }
+
+  convertTimeToFloat(timeString: any) {
+    const floatTime = parseFloat(timeString.replace(':', '.'));
+    return floatTime;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -96,10 +105,13 @@ export class AppointmentComponent implements OnInit, OnChanges {
       const appointmentHeight =
         this.startTime + parseInt(target.style.height, 10) / 60;
       const endTime = this.calculatePer15Min(appointmentHeight);
+      const startTime = this.calculatePer15Min(this.startTime);
+      this.updateSchedule(startTime, endTime);
     }
   }
 
   roundToNearestQuarterHour() {
+    console.log(this.startTime);
     this.sumBy15PixelStep = this.startTime * 60;
     this.sumBy15PixelStep += this.getBy15PixelStep.y;
     this.startTime = this.sumBy15PixelStep / 60;
@@ -120,6 +132,34 @@ export class AppointmentComponent implements OnInit, OnChanges {
     }
   }
 
+  convertPer15MinToQuarter(decimalTime: any) {
+    const hours = Math.floor(decimalTime);
+    let minutes: any = decimalTime - hours;
+    const convert: any = parseFloat(minutes).toFixed(2);
+    console.log(parseInt(convert));
+    if (convert == 0.15) {
+      return hours + 0.25;
+    } else if (convert == 0.3) {
+      return hours + 0.5;
+    } else if (convert == 0.45) {
+      return hours + 0.75;
+    } else {
+      return hours;
+    }
+  }
+
+  addMinutes(min1: any, min2: any) {
+    let total = min1 + min2;
+    let integerPart = Math.floor(total);
+    let decimalPart = total - integerPart;
+    let adjustedMinutes = Math.round(((decimalPart * 100) / 60) * 100) / 100;
+    if (adjustedMinutes >= 1) {
+      integerPart += Math.floor(adjustedMinutes);
+      adjustedMinutes -= Math.floor(adjustedMinutes);
+    }
+    total = integerPart + adjustedMinutes;
+    return total;
+  }
   diffBetweenDecimalTime(decimalTime: any) {
     const hours = Math.floor(decimalTime);
     let minutes: any = decimalTime - hours;
@@ -132,13 +172,10 @@ export class AppointmentComponent implements OnInit, OnChanges {
       60;
 
     const startTime = this.roundToNearestQuarterHour();
-    // const first = this.diffBetweenDecimalTime(startTime);
-    // const second = this.diffBetweenDecimalTime(
-    //   this.calculatePer15Min(appointmentHeight)
-    // );
-    console.log(startTime, this.calculatePer15Min(appointmentHeight));
-    // if (first !== second) {
-    // }
+    const endTime = this.calculatePer15Min(
+      this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
+    );
+    this.updateSchedule(startTime, endTime);
   }
 
   dragStarted(event: CdkDragStart | any) {
@@ -153,7 +190,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return { y: this.start.y + Math.floor(delta / 15) * 15, x: this.start.x };
   }
 
-  updateSchedule() {
+  updateSchedule(startTime: any, endTime: any) {
     this.route.params.subscribe((params) => {
       const year = params['year'];
       const month = params['month'];
@@ -162,12 +199,14 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
       const existingSchedulePerDay: any = {
         index: this.index,
+        startTime,
+        endTime,
       };
 
-      // this.scheduleService.updateScheduleById(
-      //   scheduleDate,
-      //   existingSchedulePerDay
-      // );
+      this.scheduleService.updateScheduleById(
+        scheduleDate,
+        existingSchedulePerDay
+      );
     });
   }
   deleteSchedule(scheduleId: string) {
