@@ -58,6 +58,8 @@ export class CalendarViewComponent implements AfterViewInit {
   ) {}
 
   ngOnInit() {
+    console.log('...هدفم خیره\n', '...نیتم خیره\n', '...برای امر خیره\n');
+
     // const element = this.slotTimeLine?.nativeElement;
     // console.log(element.children);
 

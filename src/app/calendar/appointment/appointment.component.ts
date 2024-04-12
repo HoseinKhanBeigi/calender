@@ -59,11 +59,9 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.startTime = this.convertPer15MinToQuarter(
       this.convertTimeToFloat(this.schedule.startTime)
     );
-    console.log(this.startTime, 'this.sche');
     const [hoursEndTime, minutesEndTime] = this.schedule.endTime.split(':');
     const totalMinutesStartTime =
       parseInt(hours, 10) * 60 + parseInt(minutes, 10);
-
     const totalMinutesEndTime =
       parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
 
@@ -111,7 +109,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   roundToNearestQuarterHour() {
-    console.log(this.startTime);
     this.sumBy15PixelStep = this.startTime * 60;
     this.sumBy15PixelStep += this.getBy15PixelStep.y;
     this.startTime = this.sumBy15PixelStep / 60;
@@ -136,7 +133,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const hours = Math.floor(decimalTime);
     let minutes: any = decimalTime - hours;
     const convert: any = parseFloat(minutes).toFixed(2);
-    console.log(parseInt(convert));
     if (convert == 0.15) {
       return hours + 0.25;
     } else if (convert == 0.3) {
@@ -166,7 +162,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return parseFloat(minutes).toFixed(2);
   }
 
-  dragEnded(event: CdkDragEnd | any) {
+  dragEnded() {
     const appointmentHeight =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
       60;
