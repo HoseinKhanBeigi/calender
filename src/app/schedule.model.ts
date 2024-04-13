@@ -1,6 +1,6 @@
 export interface Schedule {
   title: string;
-  startTime: string;
+  startTime: string | undefined;
   endTime: string;
   id?: string;
 }

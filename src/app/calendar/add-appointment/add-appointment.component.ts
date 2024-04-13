@@ -48,6 +48,7 @@ import { ActivatedRoute } from '@angular/router';
 export class AddAppointmentComponent {
   // myForm: FormGroup ;
   appointmentForm: FormGroup | any;
+  times: string[] = [];
   constructor(
     private scheduleService: ScheduleService,
     public dialogRef: MatDialogRef<AddAppointmentComponent>,
@@ -58,48 +59,38 @@ export class AddAppointmentComponent {
   ) {}
 
   ngOnInit(): void {
-    this.appointmentForm = this.formBuilder.group({
-      title: ['', Validators.required],
-      startTime: ['', Validators.required],
-      endTime: ['', Validators.required],
-      // Add more form controls as needed
+    this.scheduleService.generateTimeSequence().subscribe((time) => {
+      this.times.push(time);
     });
+
+    this.appointmentForm = this.formBuilder.group(
+      {
+        title: ['', Validators.required],
+        startTime: ['', Validators.required],
+        endTime: ['', Validators.required],
+        // Add more form controls as needed
+      },
+      { validator: this.timeValidator }
+    );
+  }
+
+  timeValidator(form: FormGroup) {
+    const startTime = form.get('startTime')?.value;
+    const endTime = form.get('endTime')?.value;
+
+    if (startTime && endTime && endTime <= startTime) {
+      return { timeInvalid: true };
+    }
+    return null;
   }
 
   selectedDateTime: any;
 
   selectedTime: string | undefined;
   selectedTime2: string | undefined;
-  times: string[] = [
-    '00:00',
-    '01:00',
-    '02:00',
-    '03:00',
-    '04:00',
-    '05:00',
-    '06:00',
-    '07:00',
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-    '21:00',
-    '22:00',
-    '23:00',
-  ];
 
   submitForm() {
     if (this.appointmentForm.valid) {
-      console.log(this.data);
       const existingSchedulePerDay: Schedule[] = [
         {
           title: this.appointmentForm.title,

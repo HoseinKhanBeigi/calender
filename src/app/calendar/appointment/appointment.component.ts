@@ -55,7 +55,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
     const [hours, minutes] = this.schedule.startTime.split(':');
-    // console.log(this.schedule.startTime, 'this.schedule.startTime');
     this.startTime = this.convertPer15MinToQuarter(
       this.convertTimeToFloat(this.schedule.startTime)
     );
@@ -104,7 +103,10 @@ export class AppointmentComponent implements OnInit, OnChanges {
         this.startTime + parseInt(target.style.height, 10) / 60;
       const endTime = this.calculatePer15Min(appointmentHeight);
       const startTime = this.calculatePer15Min(this.startTime);
-      this.updateSchedule(startTime, endTime);
+      this.updateSchedule(
+        this.formatNumberToFixedDecimal(startTime),
+        this.formatNumberToFixedDecimal(endTime)
+      );
     }
   }
 
@@ -162,6 +164,12 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return parseFloat(minutes).toFixed(2);
   }
 
+  formatNumberToFixedDecimal(num: number) {
+    // Convert the number to a float with two decimal places
+    const formattedNumber = num.toFixed(2); // This converts the number to a string
+    return formattedNumber; // Convert it back to a number if necessary
+  }
+
   dragEnded() {
     const appointmentHeight =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
@@ -171,7 +179,11 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
     );
-    this.updateSchedule(startTime, endTime);
+
+    this.updateSchedule(
+      this.formatNumberToFixedDecimal(startTime),
+      this.formatNumberToFixedDecimal(endTime)
+    );
   }
 
   dragStarted(event: CdkDragStart | any) {
@@ -201,7 +213,8 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
       this.scheduleService.updateScheduleById(
         scheduleDate,
-        existingSchedulePerDay
+        existingSchedulePerDay,
+        this.schedule.id
       );
     });
   }

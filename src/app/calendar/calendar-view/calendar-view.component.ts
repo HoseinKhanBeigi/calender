@@ -83,8 +83,6 @@ export class CalendarViewComponent implements AfterViewInit {
 
         this.schedules =
           existingDateIndex.length > 0 ? existingDateIndex[0].schedules : [];
-
-        console.log(this.schedules, 'this.schedules');
       });
     });
   }
@@ -94,30 +92,19 @@ export class CalendarViewComponent implements AfterViewInit {
       // You might want to set some data here
       // e.dataTransfer.setData('text/plain', 'This text may be dragged');
     });
-    console.log(); // Access the <ul> element
-    // this.listItems.forEach((li) => console.log(li)); // Access each <li> element
   }
 
-  drop(event: CdkDragDrop<string[]>) {
-    // console.log(event);
-  }
+  drop(event: CdkDragDrop<string[]>) {}
 
-  onDragEnter(event: any, time: any) {
-    // console.log(`Entered drop zone with time: ${time}`);
-    // Action when the draggable element is over the drop zone
-  }
+  onDragEnter(event: any, time: any) {}
 
   onDragExit(event: any, slot: any) {
-    // console.log(`Exited drop zone with time: ${slot}`);
     // Optional: Action when the draggable element leaves the drop zone
   }
 
-  onDragStart(event: DragEvent) {
-    console.log('Drag started');
-  }
+  onDragStart(event: DragEvent) {}
 
   handleClick(e: any) {
-    // console.log(this.date);
     // this.startTime = Math.floor(e.pageY / 60);
     this.dialog.open(AddAppointmentComponent, {
       data: { date: this.date },

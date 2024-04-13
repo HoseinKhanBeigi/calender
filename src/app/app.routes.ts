@@ -15,5 +15,10 @@ export const routes: Routes = [
   {
     path: ':year/:month/:day',
     component: CalendarViewComponent,
+
+    // loadChildren: () =>
+    //   import('./calendar/calendar-view/calendar-view.component').then(
+    //     (c) => c.CalendarViewComponent
+    //   ),
   },
 ];

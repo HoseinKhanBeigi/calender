@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { range } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Schedule, ScheduleDate } from './schedule.model';
 
 @Injectable({
@@ -21,10 +23,8 @@ export class ScheduleService {
     );
 
     if (dateIndex > -1) {
-      // Date exists, update schedules for that date
       newSchedules.forEach((schedule) => {
         if (!schedule.id) {
-          // Assign an ID if the schedule is new
           schedule.id = this.createScheduleId(date);
         }
       });
@@ -33,7 +33,6 @@ export class ScheduleService {
         ...newSchedules,
       ];
     } else {
-      // Date does not exist, add as a new entry with IDs for each schedule
       newSchedules = newSchedules.map((schedule) => ({
         ...schedule,
         id: schedule.id || this.createScheduleId(date),
@@ -48,33 +47,47 @@ export class ScheduleService {
     return this.schedulesSubject.asObservable();
   }
 
-  updateScheduleById(scheduleDate: any, data: any) {
+  updateScheduleById(scheduleDate: any, data: any, scheduleId: any) {
     const currentValue = this.schedulesSubject.value;
-    const existingDate = currentValue.find(
+    const existingDate: any = currentValue.filter(
       (schedule) =>
         new Date(schedule.date).getTime() === new Date(scheduleDate).getTime()
     );
     if (existingDate) {
       const convertedStartedTime = data.startTime.toString().replace('.', ':');
       const convertedEndedTime = data.endTime.toString().replace('.', ':');
-      existingDate.schedules[data.index].startTime = convertedStartedTime;
-      existingDate.schedules[data.index].endTime = convertedEndedTime;
+
+      existingDate[0].schedules.find(
+        (schedule: any) => schedule.id === scheduleId
+      ).startTime = convertedStartedTime;
+      existingDate[0].schedules.find(
+        (schedule: any) => schedule.id === scheduleId
+      ).endTime = convertedEndedTime;
     }
   }
 
+  generateTimeSequence = () => {
+    return range(0, 96).pipe(
+      map((index) => {
+        const hour = Math.floor(index / 4);
+        const minute = (index % 4) * 15;
+        const formattedHour = hour.toString().padStart(2, '0');
+        const formattedMinute = minute.toString().padStart(2, '0');
+        return `${formattedHour}:${formattedMinute}`;
+      })
+    );
+  };
+
   removeScheduleById(scheduleId: string) {
     const currentValue = this.schedulesSubject.value;
-
-    // Iterate over each date
     const updatedValue = currentValue
       .map((scheduleDate) => ({
         ...scheduleDate,
-        // Filter out the schedule with the matching ID
         schedules: scheduleDate.schedules.filter(
           (schedule) => schedule.id !== scheduleId
         ),
       }))
-      .filter((scheduleDate) => scheduleDate.schedules.length > 0); // Optionally, remove dates with no schedules left
+      .filter((scheduleDate) => scheduleDate.schedules.length > 0);
 
     this.schedulesSubject.next(updatedValue);
   }
