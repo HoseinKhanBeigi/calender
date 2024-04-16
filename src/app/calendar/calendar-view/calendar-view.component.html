@@ -10,13 +10,7 @@
   <app-date-picker></app-date-picker>
   <div class="calender-view-time-slot" #myList>
     @for (slot of timeSlots; track slot) {
-    <div
-      #listItem
-      class="calender-view-slot"
-      (click)="handleClick($event)"
-      (cdkDragEntered)="onDragEnter($event, slot)"
-      (cdkDragExited)="onDragExit($event, slot)"
-    >
+    <div #listItem class="calender-view-slot" (click)="handleClick($event)">
       <div class="calender-view-time">
         {{ slot.startTime }}
       </div>
