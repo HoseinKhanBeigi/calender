@@ -8,17 +8,18 @@ import { DateRedirectGuard } from './date-redirect.guard';
 export const routes: Routes = [
   {
     path: '',
-    component: CalendarViewComponent,
+    loadComponent: () =>
+      import('./calendar/calendar-view/calendar-view.component').then(
+        (c) => c.CalendarViewComponent
+      ),
     canActivate: [DateRedirectGuard], // Apply the guard to the root path
   },
 
   {
     path: ':year/:month/:day',
-    component: CalendarViewComponent,
-
-    // loadChildren: () =>
-    //   import('./calendar/calendar-view/calendar-view.component').then(
-    //     (c) => c.CalendarViewComponent
-    //   ),
+    loadComponent: () =>
+      import('./calendar/calendar-view/calendar-view.component').then(
+        (c) => c.CalendarViewComponent
+      ),
   },
 ];
