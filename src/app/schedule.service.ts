@@ -63,6 +63,8 @@ export class ScheduleService {
       existingDate[0].schedules.find(
         (schedule: any) => schedule.id === scheduleId
       ).endTime = convertedEndedTime;
+
+      this.getSchedules();
     }
   }
 

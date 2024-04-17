@@ -7,7 +7,6 @@
         placeholder="Title"
         formControlName="title"
         name="title"
-        [(ngModel)]="appointmentForm.title"
       />
       <mat-error *ngIf="appointmentForm.get('title').invalid"
         >Title is required</mat-error
@@ -16,11 +15,7 @@
 
     <mat-form-field>
       <mat-label>Select Start Time</mat-label>
-      <mat-select
-        formControlName="startTime"
-        name="startTime"
-        [(ngModel)]="appointmentForm.startTime"
-      >
+      <mat-select formControlName="startTime" name="startTime">
         <mat-option *ngFor="let time of times" [value]="time">{{
           time
         }}</mat-option>
@@ -32,11 +27,7 @@
 
     <mat-form-field>
       <mat-label>Select End Time</mat-label>
-      <mat-select
-        formControlName="endTime"
-        name="endTime"
-        [(ngModel)]="appointmentForm.endTime"
-      >
+      <mat-select formControlName="endTime" name="endTime">
         <mat-option *ngFor="let time of times" [value]="time">{{
           time
         }}</mat-option>

@@ -2,8 +2,7 @@ import { Component, Inject, Input } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { ScheduleService } from '../../schedule.service';
 import { Schedule, ScheduleDate } from '../../schedule.model';
-
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
   MatDialogContent,
@@ -24,7 +23,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-add-appointment',
   standalone: true,
@@ -48,13 +46,13 @@ import { ActivatedRoute } from '@angular/router';
 export class AddAppointmentComponent {
   // myForm: FormGroup ;
   appointmentForm: FormGroup | any;
+  selectedStartTime: any;
+  selectedStartEndTime: any;
   times: string[] = [];
   constructor(
     private scheduleService: ScheduleService,
     public dialogRef: MatDialogRef<AddAppointmentComponent>,
-    private route: ActivatedRoute,
     @Inject(MAT_DIALOG_DATA) public data: any,
-
     private formBuilder: FormBuilder
   ) {}
 
@@ -65,9 +63,15 @@ export class AddAppointmentComponent {
 
     this.appointmentForm = this.formBuilder.group(
       {
-        title: ['', Validators.required],
-        startTime: ['', Validators.required],
-        endTime: ['', Validators.required],
+        title: ['test', Validators.required],
+        startTime: [
+          this.data.schedule ? this.data.schedule.startTime : '',
+          Validators.required,
+        ],
+        endTime: [
+          this.data.schedule ? this.data.schedule.endTime : '',
+          Validators.required,
+        ],
         // Add more form controls as needed
       },
       { validator: this.timeValidator }
@@ -93,15 +97,25 @@ export class AddAppointmentComponent {
     if (this.appointmentForm.valid) {
       const existingSchedulePerDay: Schedule[] = [
         {
-          title: this.appointmentForm.title,
-          startTime: this.appointmentForm.startTime,
-          endTime: this.appointmentForm.endTime,
+          title: this.appointmentForm.value.title,
+          startTime: this.appointmentForm.value.startTime,
+          endTime: this.appointmentForm.value.endTime,
         },
       ];
-      this.scheduleService.addOrUpdateSchedule(
-        `${this.data.date}`,
-        existingSchedulePerDay
-      );
+
+      if (this.data.schedule) {
+        this.scheduleService.updateScheduleById(
+          this.data.date,
+          existingSchedulePerDay[0],
+          this.data.schedule.id
+        );
+      } else {
+        this.scheduleService.addOrUpdateSchedule(
+          `${this.data.date}`,
+          existingSchedulePerDay
+        );
+      }
+
       this.dialogRef.close();
     }
   }

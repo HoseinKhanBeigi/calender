@@ -1,7 +1,7 @@
 <div class="calender-view-container">
   <div *ngFor="let schedule of schedules; index as i">
     <app-appointment
-      [startTime]="startTime"
+      [startTime]="schedule.startTime"
       [index]="i"
       [schedule]="schedule"
     ></app-appointment>

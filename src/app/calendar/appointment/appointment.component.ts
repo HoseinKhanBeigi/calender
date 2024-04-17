@@ -13,6 +13,9 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AddAppointmentComponent } from '../add-appointment/add-appointment.component';
+
 import { ScheduleService } from '../../schedule.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,6 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
+    AddAppointmentComponent,
   ],
   templateUrl: './appointment.component.html',
   styleUrl: './appointment.component.scss',
@@ -47,10 +51,14 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   constructor(
     private scheduleService: ScheduleService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+    this.scheduleService.getSchedules().subscribe((ite) => {
+      console.log(ite, 'ite');
+    });
     // Access the nativeElement property to get access to the DOM element
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
@@ -83,9 +91,18 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['startTime'].currentValue) {
+      console.log(
+        this.convertPer15MinToQuarter(this.convertTimeToFloat(this.startTime)),
+        'startTime'
+      );
       const element = this.elementToManipulate?.nativeElement;
-      element.style.transform = `translateY(${this.startTime * 60}px)`;
-      element.style.height = `${60}px`;
+      element.style.transform = `translateY(${
+        this.convertPer15MinToQuarter(this.convertTimeToFloat(this.startTime)) *
+          60 +
+        15 +
+        15
+      }px)`;
+      // element.style.height = `${60}px`;
     }
   }
   dragMove(dragHandle: HTMLElement) {
@@ -220,5 +237,17 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
   deleteSchedule(scheduleId: string) {
     this.scheduleService.removeScheduleById(scheduleId);
+  }
+
+  onEditSchedule(schedule: any) {
+    this.route.params.subscribe((params) => {
+      const year = params['year'];
+      const month = params['month'];
+      const day = params['day'];
+      const scheduleDate = new Date(`${year}-${month}-${day}`);
+      this.dialog.open(AddAppointmentComponent, {
+        data: { date: scheduleDate, schedule },
+      });
+    });
   }
 }
