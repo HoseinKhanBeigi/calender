@@ -37,7 +37,10 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './appointment.component.scss',
 })
 export class AppointmentComponent implements OnInit, OnChanges {
-  @Input() startTime: any = 0;
+  startTime: any = 0;
+  onEdit: Boolean = false;
+  @Input() startTimeAppointment: any;
+  @Input() endTimeAppointment: any;
   @Input() schedule: any;
   @Input() index: number | any;
   @ViewChild('elementToManipulate', { static: true })
@@ -56,17 +59,14 @@ export class AppointmentComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.scheduleService.getSchedules().subscribe((ite) => {
-      console.log(ite, 'ite');
-    });
     // Access the nativeElement property to get access to the DOM element
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
-    const [hours, minutes] = this.schedule.startTime.split(':');
+    const [hours, minutes] = this.startTimeAppointment.split(':');
     this.startTime = this.convertPer15MinToQuarter(
-      this.convertTimeToFloat(this.schedule.startTime)
+      this.convertTimeToFloat(this.startTimeAppointment)
     );
-    const [hoursEndTime, minutesEndTime] = this.schedule.endTime.split(':');
+    const [hoursEndTime, minutesEndTime] = this.endTimeAppointment.split(':');
     const totalMinutesStartTime =
       parseInt(hours, 10) * 60 + parseInt(minutes, 10);
     const totalMinutesEndTime =
@@ -90,23 +90,53 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['startTime'].currentValue) {
-      console.log(
-        this.convertPer15MinToQuarter(this.convertTimeToFloat(this.startTime)),
-        'startTime'
-      );
-      const element = this.elementToManipulate?.nativeElement;
+    const element = this.elementToManipulate?.nativeElement;
+    const dragHandleBottom = this.dragHandleBottom?.nativeElement;
+
+    if (this.onEdit) {
       element.style.transform = `translateY(${
-        this.convertPer15MinToQuarter(this.convertTimeToFloat(this.startTime)) *
+        this.convertPer15MinToQuarter(
+          this.convertTimeToFloat(this.startTimeAppointment)
+        ) *
           60 +
         15 +
         15
       }px)`;
-      // element.style.height = `${60}px`;
+      element.style.height = `${
+        (this.convertPer15MinToQuarter(
+          this.convertTimeToFloat(this.endTimeAppointment)
+        ) -
+          this.convertPer15MinToQuarter(
+            this.convertTimeToFloat(this.startTimeAppointment)
+          )) *
+        60
+      }px`;
+
+      if (
+        changes['startTimeAppointment']?.currentValue ||
+        changes['endTimeAppointment']?.currentValue
+      ) {
+        const getTop =
+          this.elementToManipulate?.nativeElement.getBoundingClientRect()
+            .height;
+
+        console.log(getTop, 'dragHandleBottom');
+
+        const [hours, minutes] = this.startTimeAppointment.split(':');
+
+        const [hoursEndTime, minutesEndTime] =
+          this.endTimeAppointment.split(':');
+        const totalMinutesStartTime =
+          parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+        const totalMinutesEndTime =
+          parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
+        dragHandleBottom.style.top = `${getTop}px`;
+      }
     }
   }
   dragMove(dragHandle: HTMLElement) {
     this.resize(dragHandle, this.resizeBoxElement);
+    this.onEdit = false;
   }
 
   resize(dragHandle: HTMLElement, target: HTMLElement) {
@@ -131,7 +161,9 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.sumBy15PixelStep = this.startTime * 60;
     this.sumBy15PixelStep += this.getBy15PixelStep.y;
     this.startTime = this.sumBy15PixelStep / 60;
-    return this.calculatePer15Min(this.startTime);
+    return this.calculatePer15Min(
+      this.formatNumberToFixedDecimal(this.startTime)
+    );
   }
 
   calculatePer15Min(decimalTime: any) {
@@ -181,13 +213,15 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return parseFloat(minutes).toFixed(2);
   }
 
-  formatNumberToFixedDecimal(num: number) {
-    // Convert the number to a float with two decimal places
-    const formattedNumber = num.toFixed(2); // This converts the number to a string
-    return formattedNumber; // Convert it back to a number if necessary
+  formatNumberToFixedDecimal(num: any) {
+    const fixedNum = num.toFixed(2);
+    const parts = fixedNum.split('.');
+    const paddedInt =
+      parts[0].length < 2 ? parts[0].padStart(2, '0') : parts[0];
+    return `${paddedInt}.${parts[1]}`;
   }
 
-  dragEnded() {
+  dragEnded($event: CdkDragEnd) {
     const appointmentHeight =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
       60;
@@ -201,6 +235,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       this.formatNumberToFixedDecimal(startTime),
       this.formatNumberToFixedDecimal(endTime)
     );
+    this.onEdit = false;
   }
 
   dragStarted(event: CdkDragStart | any) {
@@ -226,6 +261,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
         index: this.index,
         startTime,
         endTime,
+        title: this.schedule.title,
       };
 
       this.scheduleService.updateScheduleById(
@@ -240,13 +276,20 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   onEditSchedule(schedule: any) {
+    this.onEdit = true;
     this.route.params.subscribe((params) => {
       const year = params['year'];
       const month = params['month'];
       const day = params['day'];
       const scheduleDate = new Date(`${year}-${month}-${day}`);
       this.dialog.open(AddAppointmentComponent, {
-        data: { date: scheduleDate, schedule },
+        data: {
+          date: scheduleDate,
+
+          startTime: this.startTimeAppointment,
+          endTime: this.endTimeAppointment,
+          schedule,
+        },
       });
     });
   }

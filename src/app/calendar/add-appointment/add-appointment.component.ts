@@ -2,6 +2,7 @@ import { Component, Inject, Input } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { ScheduleService } from '../../schedule.service';
 import { Schedule, ScheduleDate } from '../../schedule.model';
+
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import {
@@ -28,6 +29,7 @@ import { NgFor, NgIf } from '@angular/common';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
@@ -51,10 +53,17 @@ export class AddAppointmentComponent {
   times: string[] = [];
   constructor(
     private scheduleService: ScheduleService,
+
     public dialogRef: MatDialogRef<AddAppointmentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private formBuilder: FormBuilder
   ) {}
+
+  formatNumberToFixedDecimal(num: number) {
+    // Convert the number to a float with two decimal places
+    const formattedNumber = num.toFixed(2); // This converts the number to a string
+    return formattedNumber; // Convert it back to a number if necessary
+  }
 
   ngOnInit(): void {
     this.scheduleService.generateTimeSequence().subscribe((time) => {
@@ -63,13 +72,16 @@ export class AddAppointmentComponent {
 
     this.appointmentForm = this.formBuilder.group(
       {
-        title: ['test', Validators.required],
+        title: [
+          this.data.schedule ? this.data.schedule.title : '',
+          Validators.required,
+        ],
         startTime: [
-          this.data.schedule ? this.data.schedule.startTime : '',
+          this.data.startTime ? this.data.startTime : '',
           Validators.required,
         ],
         endTime: [
-          this.data.schedule ? this.data.schedule.endTime : '',
+          this.data.endTime ? this.data.endTime : '',
           Validators.required,
         ],
         // Add more form controls as needed

@@ -56,6 +56,7 @@ export class ScheduleService {
     if (existingDate) {
       const convertedStartedTime = data.startTime.toString().replace('.', ':');
       const convertedEndedTime = data.endTime.toString().replace('.', ':');
+      const title = data.title;
 
       existingDate[0].schedules.find(
         (schedule: any) => schedule.id === scheduleId
@@ -63,6 +64,10 @@ export class ScheduleService {
       existingDate[0].schedules.find(
         (schedule: any) => schedule.id === scheduleId
       ).endTime = convertedEndedTime;
+
+      existingDate[0].schedules.find(
+        (schedule: any) => schedule.id === scheduleId
+      ).title = title;
 
       this.getSchedules();
     }
