@@ -1,5 +1,5 @@
 <mat-dialog-content>
-  <form [formGroup]="appointmentForm" (ngSubmit)="submitForm()">
+  <form [formGroup]="appointmentForm">
     <mat-form-field class="example-full-width">
       <mat-label>Appointment name</mat-label>
       <input
@@ -46,6 +46,7 @@
       type="submit"
       color="primary"
       [disabled]="!appointmentForm.valid"
+      (click)="submitForm()"
     >
       Submit
     </button>

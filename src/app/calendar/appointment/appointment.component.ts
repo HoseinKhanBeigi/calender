@@ -113,6 +113,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       this.sumBy15PixelStep = Math.round(
         this.convertTimeToFloat(this.startTimeAppointment) * 100
       );
+      dragHandleBottom.style.transform = `translateY(${0}px)`;
       element.style.height = `${
         (this.convertPer15MinToQuarter(
           this.convertTimeToFloat(this.endTimeAppointment)
