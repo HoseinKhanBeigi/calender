@@ -51,6 +51,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
   start: any;
   getBy15PixelStep: any;
   sumBy15PixelStep: any = 0;
+  scheduleDate: any;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -59,6 +60,12 @@ export class AppointmentComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      const year = params['year'];
+      const month = params['month'];
+      const day = params['day'];
+      this.scheduleDate = new Date(`${year}-${month}-${day}`);
+    });
     // Access the nativeElement property to get access to the DOM element
     const element = this.elementToManipulate?.nativeElement;
     const dragHandleBottom = this.dragHandleBottom?.nativeElement;
@@ -277,20 +284,13 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   onEditSchedule(schedule: any) {
     this.onEdit = true;
-    this.route.params.subscribe((params) => {
-      const year = params['year'];
-      const month = params['month'];
-      const day = params['day'];
-      const scheduleDate = new Date(`${year}-${month}-${day}`);
-      this.dialog.open(AddAppointmentComponent, {
-        data: {
-          date: scheduleDate,
-
-          startTime: this.startTimeAppointment,
-          endTime: this.endTimeAppointment,
-          schedule,
-        },
-      });
+    this.dialog.open(AddAppointmentComponent, {
+      data: {
+        date: this.scheduleDate,
+        startTime: this.startTimeAppointment,
+        endTime: this.endTimeAppointment,
+        schedule,
+      },
     });
   }
 }
