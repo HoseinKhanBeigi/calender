@@ -66,6 +66,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.startTime = this.convertPer15MinToQuarter(
       this.convertTimeToFloat(this.startTimeAppointment)
     );
+
     const [hoursEndTime, minutesEndTime] = this.endTimeAppointment.split(':');
     const totalMinutesStartTime =
       parseInt(hours, 10) * 60 + parseInt(minutes, 10);
@@ -102,6 +103,9 @@ export class AppointmentComponent implements OnInit, OnChanges {
         15 +
         15
       }px)`;
+      this.sumBy15PixelStep = Math.round(
+        this.convertTimeToFloat(this.startTimeAppointment) * 100
+      );
       element.style.height = `${
         (this.convertPer15MinToQuarter(
           this.convertTimeToFloat(this.endTimeAppointment)
@@ -116,12 +120,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
         changes['startTimeAppointment']?.currentValue ||
         changes['endTimeAppointment']?.currentValue
       ) {
-        const getTop =
-          this.elementToManipulate?.nativeElement.getBoundingClientRect()
-            .height;
-
-        console.log(getTop, 'dragHandleBottom');
-
         const [hours, minutes] = this.startTimeAppointment.split(':');
 
         const [hoursEndTime, minutesEndTime] =
@@ -130,7 +128,9 @@ export class AppointmentComponent implements OnInit, OnChanges {
           parseInt(hours, 10) * 60 + parseInt(minutes, 10);
         const totalMinutesEndTime =
           parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
-        dragHandleBottom.style.top = `${getTop}px`;
+        dragHandleBottom.style.top = `${
+          totalMinutesEndTime - totalMinutesStartTime
+        }px`;
       }
     }
   }

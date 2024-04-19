@@ -1,6 +1,7 @@
 <div
   #elementToManipulate
   class="appointment"
+  cdkDragBoundary=".calender-view-container"
   cdkDrag
   [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
   (cdkDragStarted)="dragStarted($event)"

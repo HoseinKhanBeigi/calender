@@ -7,7 +7,7 @@ import { AddAppointmentComponent } from '../add-appointment/add-appointment.comp
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { ScheduleService } from '../../schedule.service';
 import { Schedule } from '../../schedule.model';
-import { NgForOf } from '@angular/common';
+import { NgForOf, NgStyle } from '@angular/common';
 import {
   CdkDrag,
   CdkDragPlaceholder,
@@ -25,6 +25,7 @@ import {
     AddAppointmentComponent,
     DatePickerComponent,
     NgForOf,
+    NgStyle,
   ],
   templateUrl: './calendar-view.component.html',
   styleUrl: './calendar-view.component.scss',
@@ -59,6 +60,10 @@ export class CalendarViewComponent {
           existingDateIndex.length > 0 ? existingDateIndex[0].schedules : [];
       });
     });
+  }
+
+  calculateTop(index: number): string {
+    return `${15 * (index + 1)}px`; // Each line is 15px more than the previous
   }
 
   handleClick(e: any) {

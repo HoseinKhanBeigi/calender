@@ -5,7 +5,7 @@
   background-color: rgb(3, 155, 229);
   border-color: rgb(3, 155, 229);
   // opacity: 0.4;
-  border-radius: 1px;
+  border-radius: 4px;
   box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   cursor: grab;
@@ -15,7 +15,7 @@
 
 .dragHandle {
   position: absolute;
-  background-color: gray;
+  background-color: rgb(255, 0, 0);
   border-radius: 15px;
   left: 0;
   top: 60px;
@@ -28,7 +28,7 @@
 }
 
 .dragHandle.bottom {
-  height: 2px;
+  height: 6px;
   width: 980px;
   cursor: ns-resize;
 }

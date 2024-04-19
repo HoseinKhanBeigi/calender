@@ -16,7 +16,14 @@
         {{ slot.startTime }}
       </div>
 
-      <div class="calender-view-line"></div>
+      <div class="calender-view-line">
+        <div *ngFor="let num of slot.Decimal; let i = index">
+          <div
+            [ngStyle]="{ position: 'absolute', top: calculateTop(i) }"
+            class="calender-view-line-decimal"
+          ></div>
+        </div>
+      </div>
     </div>
     }
   </div>
