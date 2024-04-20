@@ -7,11 +7,20 @@
       [schedule]="schedule"
     ></app-appointment>
   </div>
-
-  <app-date-picker></app-date-picker>
+  <div class="calender-view-datePicker">
+    <app-date-picker></app-date-picker>
+    <button mat-raised-button color="primary" (click)="handleClick()">
+      ADD APPOINTMENT
+    </button>
+  </div>
   <div class="calender-view-time-slot" #myList>
     @for (slot of timeSlots; track slot) {
-    <div #listItem class="calender-view-slot" (click)="handleClick($event)">
+    <div
+      class="calender-view-slot"
+      (click)="handleClick()"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+    >
       <div class="calender-view-time">
         {{ slot.startTime }}
       </div>

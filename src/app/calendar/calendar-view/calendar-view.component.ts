@@ -13,6 +13,7 @@ import {
   CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-calendar-view',
@@ -25,6 +26,7 @@ import {
     AddAppointmentComponent,
     DatePickerComponent,
     NgForOf,
+    MatButtonModule,
     NgStyle,
   ],
   templateUrl: './calendar-view.component.html',
@@ -62,11 +64,27 @@ export class CalendarViewComponent {
     });
   }
 
+  onDragOver(event: DragEvent) {
+    console.log('log...');
+
+    // event.preventDefault(); // Necessary to allow the drop
+    // You can do other things here, such as changing the style to indicate a drag is over this area
+  }
+
+  onDrop(event: DragEvent) {
+    console.log('log...');
+    // event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
+    // const data = event.dataTransfer.getData('text');
+    // console.log('Dropped data:', data);
+    // You can handle the dropped data here
+  }
+  addAppointment() {}
+
   calculateTop(index: number): string {
     return `${15 * (index + 1)}px`; // Each line is 15px more than the previous
   }
 
-  handleClick(e: any) {
+  handleClick() {
     this.dialog.open(AddAppointmentComponent, {
       data: { date: this.date },
     });

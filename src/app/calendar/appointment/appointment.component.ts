@@ -80,9 +80,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const totalMinutesEndTime =
       parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
 
-    element.style.transform = `translateY(${
-      totalMinutesStartTime + 15 + 15
-    }px)`;
+    element.style.transform = `translateY(${totalMinutesStartTime}px)`;
     element.style.height = `${totalMinutesEndTime - totalMinutesStartTime}px`;
     dragHandleBottom.style.top = `${
       totalMinutesEndTime - totalMinutesStartTime
@@ -105,10 +103,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       element.style.transform = `translateY(${
         this.convertPer15MinToQuarter(
           this.convertTimeToFloat(this.startTimeAppointment)
-        ) *
-          60 +
-        15 +
-        15
+        ) * 60
       }px)`;
       this.sumBy15PixelStep = Math.round(
         this.convertTimeToFloat(this.startTimeAppointment) * 100
@@ -229,20 +224,36 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return `${paddedInt}.${parts[1]}`;
   }
 
-  dragEnded($event: CdkDragEnd) {
+  dragEnded($event: any) {
     const appointmentHeight =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
       60;
 
-    const startTime = this.roundToNearestQuarterHour();
-    const endTime = this.calculatePer15Min(
+    let startTime = this.roundToNearestQuarterHour();
+    if (this.startTime <= 0) {
+      this.startTime = 0;
+      this.sumBy15PixelStep = 0;
+      startTime = 0;
+    }
+    if (this.startTime > 23.5) {
+      this.startTime = 23.5;
+      this.sumBy15PixelStep = 23.5;
+      // endTime = 23.45;
+    }
+    let endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
     );
+    if (endTime === 23.45) {
+      endTime = 23.45;
+    }
+
+    // console.log(startTime);
 
     this.updateSchedule(
       this.formatNumberToFixedDecimal(startTime),
       this.formatNumberToFixedDecimal(endTime)
     );
+
     this.onEdit = false;
   }
 
