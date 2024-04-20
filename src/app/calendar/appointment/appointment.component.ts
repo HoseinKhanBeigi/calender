@@ -164,6 +164,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.sumBy15PixelStep = this.startTime * 60;
     this.sumBy15PixelStep += this.getBy15PixelStep.y;
     this.startTime = this.sumBy15PixelStep / 60;
+
     return this.calculatePer15Min(
       this.formatNumberToFixedDecimal(this.startTime)
     );
@@ -235,15 +236,12 @@ export class AppointmentComponent implements OnInit, OnChanges {
       this.sumBy15PixelStep = 0;
       startTime = 0;
     }
-    if (this.startTime > 23.5) {
-      this.startTime = 23.5;
-      this.sumBy15PixelStep = 23.5;
-      // endTime = 23.45;
-    }
+
     let endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
     );
-    if (endTime === 23.45) {
+    if (endTime > 23.45) {
+      // startTime = 23.45 - this.calculatePer15Min(appointmentHeight);
       endTime = 23.45;
     }
 
