@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TIME_SLOTS } from './time-slots';
+import { DraggableComponent } from '../draggable/draggable.component';
 import { AppointmentComponent } from '../appointment/appointment.component';
 import { AddAppointmentComponent } from '../add-appointment/add-appointment.component';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
@@ -10,6 +11,7 @@ import { Schedule } from '../../schedule.model';
 import { NgForOf, NgStyle } from '@angular/common';
 import {
   CdkDrag,
+  CdkDragDrop,
   CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
@@ -25,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
     AppointmentComponent,
     AddAppointmentComponent,
     DatePickerComponent,
+    DraggableComponent,
     NgForOf,
     MatButtonModule,
     NgStyle,
@@ -62,6 +65,14 @@ export class CalendarViewComponent {
           existingDateIndex.length > 0 ? existingDateIndex[0].schedules : [];
       });
     });
+  }
+
+  drop(event: any) {
+    console.log('hiii....');
+  }
+  onDragStart(event: DragEvent) {
+    // Transfer the data: the draggable element's ID
+    event?.dataTransfer?.setData('text/plain', (event.target as Element).id);
   }
 
   onDragOver(event: DragEvent) {

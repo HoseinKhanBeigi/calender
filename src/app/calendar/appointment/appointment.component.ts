@@ -240,17 +240,25 @@ export class AppointmentComponent implements OnInit, OnChanges {
     let endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
     );
+
     if (endTime > 23.45) {
-      // startTime = 23.45 - this.calculatePer15Min(appointmentHeight);
       endTime = 23.45;
+      this.startTime = this.convertPer15MinToQuarter(
+        endTime - this.calculatePer15Min(appointmentHeight)
+      );
+      this.sumBy15PixelStep = this.convertPer15MinToQuarter(
+        endTime - this.calculatePer15Min(appointmentHeight)
+      );
+      startTime = endTime - this.calculatePer15Min(appointmentHeight);
+    }
+    if (endTime <= 23.45) {
+      this.updateSchedule(
+        this.formatNumberToFixedDecimal(startTime),
+        this.formatNumberToFixedDecimal(endTime)
+      );
     }
 
     // console.log(startTime);
-
-    this.updateSchedule(
-      this.formatNumberToFixedDecimal(startTime),
-      this.formatNumberToFixedDecimal(endTime)
-    );
 
     this.onEdit = false;
   }

@@ -13,13 +13,18 @@
       ADD APPOINTMENT
     </button>
   </div>
-  <div class="calender-view-time-slot" #myList>
+
+  <div
+    class="calender-view-time-slot"
+    #myList
+    (dragover)="onDragOver($event)"
+    (drop)="onDrop($event)"
+  >
     @for (slot of timeSlots; track slot) {
     <div
       class="calender-view-slot"
       (click)="handleClick()"
-      (dragover)="onDragOver($event)"
-      (drop)="onDrop($event)"
+      (cdkDropListDropped)="drop($event)"
     >
       <div class="calender-view-time">
         {{ slot.startTime }}
