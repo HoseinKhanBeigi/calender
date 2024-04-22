@@ -6,6 +6,7 @@
   [cdkDragConstrainPosition]="computeDragRenderPos.bind(this)"
   (cdkDragStarted)="dragStarted($event)"
   (cdkDragEnded)="dragEnded($event)"
+  [cdkDragDisabled]="disabled"
 >
   <div class="appointment-tools">
     <div>

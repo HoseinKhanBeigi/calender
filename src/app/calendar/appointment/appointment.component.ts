@@ -52,6 +52,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
   getBy15PixelStep: any;
   sumBy15PixelStep: any = 0;
   scheduleDate: any;
+  disabled: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -232,10 +233,12 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
     let startTime = this.roundToNearestQuarterHour();
     if (this.startTime <= 0) {
-      this.startTime = 0;
-      this.sumBy15PixelStep = 0;
-      startTime = 0;
+      // this.disabled = true;
+      // this.startTime = 0;
+      // this.sumBy15PixelStep = 0;
+      // startTime = 0;
     }
+    // this.disabled = false;
 
     let endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
