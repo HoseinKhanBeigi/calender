@@ -53,6 +53,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
   sumBy15PixelStep: any = 0;
   scheduleDate: any;
   disabled: boolean = false;
+  isResize: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -120,45 +121,44 @@ export class AppointmentComponent implements OnInit, OnChanges {
         60
       }px`;
     }
-      if (
-        changes['startTimeAppointment']?.currentValue ||
-        changes['endTimeAppointment']?.currentValue
-      ) {
-        const [hours, minutes] = this.startTimeAppointment.split(':');
+    if (
+      (changes['startTimeAppointment']?.currentValue ||
+        changes['endTimeAppointment']?.currentValue) &&
+      this.isResize
+    ) {
+      const [hours, minutes] = this.startTimeAppointment.split(':');
 
-        const [hoursEndTime, minutesEndTime] =
-          this.endTimeAppointment.split(':');
-        const totalMinutesStartTime =
-          parseInt(hours, 10) * 60 + parseInt(minutes, 10);
-        const totalMinutesEndTime =
-          parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
-        dragHandleBottom.style.top = `${
-          totalMinutesEndTime - totalMinutesStartTime
-        }px`;
-      
+      const [hoursEndTime, minutesEndTime] = this.endTimeAppointment.split(':');
+      const totalMinutesStartTime =
+        parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+      const totalMinutesEndTime =
+        parseInt(hoursEndTime, 10) * 60 + parseInt(minutesEndTime, 10);
+      dragHandleBottom.style.top = `${
+        totalMinutesEndTime - totalMinutesStartTime
+      }px`;
     }
   }
   dragMove(dragHandle: HTMLElement) {
     this.resize(dragHandle, this.resizeBoxElement);
     this.onEdit = false;
+    this.isResize = false;
   }
   resize(dragHandle: HTMLElement, target: HTMLElement) {
     const dragRect = dragHandle.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
     const height = dragRect.top - targetRect.top + dragRect.height;
-    if (height >= 15) {
-      target.style.height = Math.floor(height / 15) * 15 + 'px';
 
-      if (target.style.height) {
-        const appointmentHeight =
-          this.startTime + parseInt(target.style.height, 10) / 60;
-        const endTime = this.calculatePer15Min(appointmentHeight);
-        const startTime = this.calculatePer15Min(this.startTime);
-        this.updateSchedule(
-          this.formatNumberToFixedDecimal(startTime),
-          this.formatNumberToFixedDecimal(endTime)
-        );
-      }
+    target.style.height = Math.floor(height / 15) * 15 + 'px';
+
+    if (target.style.height) {
+      const appointmentHeight =
+        this.startTime + parseInt(target.style.height, 10) / 60;
+      const endTime = this.calculatePer15Min(appointmentHeight);
+      const startTime = this.calculatePer15Min(this.startTime);
+      this.updateSchedule(
+        this.formatNumberToFixedDecimal(startTime),
+        this.formatNumberToFixedDecimal(endTime)
+      );
     }
   }
 
@@ -227,6 +227,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   dragEnded($event: any) {
+    this.isResize = true;
     const appointmentHeight =
       this.elementToManipulate?.nativeElement.getBoundingClientRect().height /
       60;
@@ -299,6 +300,8 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   onEditSchedule(schedule: any) {
     this.onEdit = true;
+    this.isResize = true;
+
     this.dialog.open(AddAppointmentComponent, {
       data: {
         date: this.scheduleDate,
