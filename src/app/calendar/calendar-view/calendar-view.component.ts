@@ -2,7 +2,6 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TIME_SLOTS } from './time-slots';
-import { DraggableComponent } from '../draggable/draggable.component';
 import { AppointmentComponent } from '../appointment/appointment.component';
 import { AddAppointmentComponent } from '../add-appointment/add-appointment.component';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
@@ -11,7 +10,6 @@ import { Schedule } from '../../schedule.model';
 import { NgForOf, NgStyle } from '@angular/common';
 import {
   CdkDrag,
-  CdkDragDrop,
   CdkDragPlaceholder,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
@@ -27,7 +25,6 @@ import { MatButtonModule } from '@angular/material/button';
     AppointmentComponent,
     AddAppointmentComponent,
     DatePickerComponent,
-    DraggableComponent,
     NgForOf,
     MatButtonModule,
     NgStyle,
@@ -48,7 +45,6 @@ export class CalendarViewComponent {
   ) {}
 
   ngOnInit() {
-    console.log('...هدفم خیره\n', '...نیتم خیره\n', '...برای امر خیره\n');
     this.scheduleService.getSchedules().subscribe((schedules) => {
       this.route.params.subscribe((params) => {
         const year = params['year'];
@@ -66,30 +62,6 @@ export class CalendarViewComponent {
       });
     });
   }
-
-  drop(event: any) {
-    console.log('hiii....');
-  }
-  onDragStart(event: DragEvent) {
-    // Transfer the data: the draggable element's ID
-    event?.dataTransfer?.setData('text/plain', (event.target as Element).id);
-  }
-
-  onDragOver(event: DragEvent) {
-    console.log('log...');
-
-    // event.preventDefault(); // Necessary to allow the drop
-    // You can do other things here, such as changing the style to indicate a drag is over this area
-  }
-
-  onDrop(event: DragEvent) {
-    console.log('log...');
-    // event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
-    // const data = event.dataTransfer.getData('text');
-    // console.log('Dropped data:', data);
-    // You can handle the dropped data here
-  }
-  addAppointment() {}
 
   calculateTop(index: number): string {
     return `${15 * (index + 1)}px`; // Each line is 15px more than the previous

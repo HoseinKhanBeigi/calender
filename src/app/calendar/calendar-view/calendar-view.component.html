@@ -14,18 +14,9 @@
     </button>
   </div>
 
-  <div
-    class="calender-view-time-slot"
-    #myList
-    (dragover)="onDragOver($event)"
-    (drop)="onDrop($event)"
-  >
+  <div class="calender-view-time-slot" #myList>
     @for (slot of timeSlots; track slot) {
-    <div
-      class="calender-view-slot"
-      (click)="handleClick()"
-      (cdkDropListDropped)="drop($event)"
-    >
+    <div class="calender-view-slot" (click)="handleClick()">
       <div class="calender-view-time">
         {{ slot.startTime }}
       </div>

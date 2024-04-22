@@ -142,22 +142,23 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.resize(dragHandle, this.resizeBoxElement);
     this.onEdit = false;
   }
-
   resize(dragHandle: HTMLElement, target: HTMLElement) {
     const dragRect = dragHandle.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
     const height = dragRect.top - targetRect.top + dragRect.height;
-    target.style.height = Math.floor(height / 15) * 15 + 'px';
+    if (height >= 15) {
+      target.style.height = Math.floor(height / 15) * 15 + 'px';
 
-    if (target.style.height) {
-      const appointmentHeight =
-        this.startTime + parseInt(target.style.height, 10) / 60;
-      const endTime = this.calculatePer15Min(appointmentHeight);
-      const startTime = this.calculatePer15Min(this.startTime);
-      this.updateSchedule(
-        this.formatNumberToFixedDecimal(startTime),
-        this.formatNumberToFixedDecimal(endTime)
-      );
+      if (target.style.height) {
+        const appointmentHeight =
+          this.startTime + parseInt(target.style.height, 10) / 60;
+        const endTime = this.calculatePer15Min(appointmentHeight);
+        const startTime = this.calculatePer15Min(this.startTime);
+        this.updateSchedule(
+          this.formatNumberToFixedDecimal(startTime),
+          this.formatNumberToFixedDecimal(endTime)
+        );
+      }
     }
   }
 
@@ -165,7 +166,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.sumBy15PixelStep = this.startTime * 60;
     this.sumBy15PixelStep += this.getBy15PixelStep.y;
     this.startTime = this.sumBy15PixelStep / 60;
-
     return this.calculatePer15Min(
       this.formatNumberToFixedDecimal(this.startTime)
     );
@@ -233,13 +233,10 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
     let startTime = this.roundToNearestQuarterHour();
     if (this.startTime <= 0) {
-      // this.disabled = true;
-      // this.startTime = 0;
-      // this.sumBy15PixelStep = 0;
-      // startTime = 0;
+      this.startTime = 0;
+      this.sumBy15PixelStep = 0;
+      startTime = 0;
     }
-    // this.disabled = false;
-
     let endTime = this.calculatePer15Min(
       this.addMinutes(startTime, this.calculatePer15Min(appointmentHeight))
     );
@@ -260,10 +257,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
         this.formatNumberToFixedDecimal(endTime)
       );
     }
-
-    // console.log(startTime);
-
-    this.onEdit = false;
+    this.onEdit = true;
   }
 
   dragStarted(event: CdkDragStart | any) {
