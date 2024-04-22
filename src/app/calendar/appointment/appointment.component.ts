@@ -119,7 +119,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
           )) *
         60
       }px`;
-
+    }
       if (
         changes['startTimeAppointment']?.currentValue ||
         changes['endTimeAppointment']?.currentValue
@@ -135,7 +135,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
         dragHandleBottom.style.top = `${
           totalMinutesEndTime - totalMinutesStartTime
         }px`;
-      }
+      
     }
   }
   dragMove(dragHandle: HTMLElement) {
